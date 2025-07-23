@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Código HTML para Iframes</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      padding: 25px;
+      background-color: #f1f8e9;
+      color: #2e7d32;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #1b5e20;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      border-bottom: 2px solid #4caf50;
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-top: 10px;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      background-color: #e8f5e9;
+      color: #1b5e20;
+      resize: vertical;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    pre {
+      background-color: #e8f5e9;
+      padding: 15px;
+      white-space: pre-wrap;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      color: #1b5e20;
+      font-family: monospace;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    
+    .iframe-code {
+      margin-top: 25px;
+    }
+    
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+    
+    button:hover {
+      background-color: #388e3c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    #fileInput {
+      display: none;
+    }
+    
+    .file-input-label {
+      padding: 10px 20px;
+      border-radius: 25px;
+      background-color: #81c784;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .file-input-label:hover {
+      background-color: #66bb6a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    label {
+      color: #2e7d32;
+      font-weight: bold;
+      margin-top: 15px;
+      display: block;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .info-message {
+      color: #2e7d32;
+      font-style: italic;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✨ Generador de Código HTML para Iframes</h2>
+
+    <label for="fileInput">Importar archivo .txt con enlaces:</label>
+    <label for="fileInput" class="file-input-label">📂 Seleccionar archivo</label>
+    <input type="file" id="fileInput" accept=".txt">
+    
+    <label for="manualInput">O pegar enlaces manualmente (uno por línea):</label>
+    <p class="info-message">Ejemplo: https://short.icu/xxxxxxx</p>
+    <textarea id="manualInput" placeholder="Pega aquí tus enlaces..."></textarea>
+    
+    <button onclick="generarCodigo()">⚡ Generar Código</button>
+
+    <div class="iframe-code" id="codigoContainer"></div>
+  </div>
+
+  <script>
+    function generarCodigo() {
+      const container = document.getElementById("codigoContainer");
+      container.innerHTML = ""; // limpiar resultados previos
+
+      const inputText = document.getElementById("manualInput").value.trim();
+      const enlaces = inputText.split("\n").map(e => e.trim()).filter(e => e !== "");
+
+      if (enlaces.length === 0) {
+        container.innerHTML = "<p style='color:#d32f2f;'>⚠️ No se encontraron enlaces válidos.</p>";
+        return;
+      }
+
+      let codigoHTML = `<!-- ${enlaces.length} iframe${enlaces.length > 1 ? 's' : ''} generado${enlaces.length > 1 ? 's' : ''} -->\n\n`;
+
+      enlaces.forEach(url => {
+        codigoHTML += `<iframe width="800" height="440" src="${url}" frameborder="0" scrolling="0" allowfullscreen></iframe>\n\n`;
+      });
+
+      const pre = document.createElement("pre");
+      pre.textContent = codigoHTML;
+      
+      const copyBtn = document.createElement("button");
+      copyBtn.innerHTML = "📋 Copiar Código";
+      copyBtn.onclick = function() {
+        navigator.clipboard.writeText(codigoHTML).then(() => {
+          alert("¡Código copiado al portapapeles!");
+        });
+      };
+      
+      container.appendChild(pre);
+      container.appendChild(copyBtn);
+    }
+
+    // Leer archivo .txt
+    document.getElementById("fileInput").addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById("manualInput").value = e.target.result;
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>

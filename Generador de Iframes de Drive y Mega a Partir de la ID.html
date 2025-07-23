@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Iframes (Drive / Mega)</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f1f8e9;
+      padding: 20px;
+      color: #2e7d32;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #1b5e20;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      border-bottom: 2px solid #4caf50;
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-top: 15px;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      background-color: #e8f5e9;
+      color: #1b5e20;
+      resize: vertical;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    button:hover {
+      background-color: #388e3c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    #fileInput {
+      display: none;
+    }
+    
+    .file-input-label {
+      padding: 10px 20px;
+      border-radius: 25px;
+      background-color: #81c784;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .file-input-label:hover {
+      background-color: #66bb6a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    #output {
+      margin-top: 25px;
+      white-space: pre-wrap;
+      background: #e8f5e9;
+      padding: 15px;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      color: #1b5e20;
+      font-family: monospace;
+      min-height: 50px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .mode {
+      font-weight: bold;
+      color: #1b5e20;
+      background-color: #c8e6c9;
+      padding: 5px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .info-text {
+      color: #2e7d32;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📽️ Generador de Iframes desde IDs</h2>
+    <p>Modo actual: <span class="mode" id="mode">Drive</span></p>
+    <p class="info-text">Pega los IDs de Google Drive o Mega (uno por línea) para generar iframes</p>
+
+    <div class="buttons">
+      <button onclick="toggleMode()">🔄 Cambiar a Mega/Drive</button>
+      <label for="fileInput" class="file-input-label">📂 Cargar desde archivo</label>
+      <input type="file" id="fileInput">
+      <button onclick="generarIframes()">✨ Generar Iframes</button>
+      <button onclick="copiarResultado()">📋 Copiar Resultado</button>
+    </div>
+
+    <textarea id="inputText" placeholder="Ejemplo para Drive: 1a2b3c4d5e6f7g8h9i0j...\nEjemplo para Mega: abcdef123#ghijkl456..."></textarea>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    let modo = 'Drive';
+
+    function toggleMode() {
+      modo = (modo === 'Drive') ? 'Mega' : 'Drive';
+      document.getElementById('mode').innerText = modo;
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function (event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById('inputText').value = reader.result;
+      };
+      reader.readAsText(event.target.files[0]);
+    });
+
+    function generarIframes() {
+      const input = document.getElementById('inputText').value.trim();
+      const lineas = input.split(/\r?\n/);
+      const resultado = [];
+
+      lineas.forEach(id => {
+        id = id.trim();
+        if (!id) return;
+
+        if (modo === 'Drive') {
+          resultado.push(`<iframe src="https://drive.google.com/file/d/${id}/preview" width="800" height="440" allow="autoplay" allowfullscreen></iframe>`);
+        } else {
+          resultado.push(`<iframe width="800" height="440" frameborder="0" src="https://mega.nz/embed/${id}" allowfullscreen></iframe>`);
+        }
+      });
+
+      document.getElementById('output').innerHTML = resultado.length
+        ? `<strong>Iframes generados (${modo}):</strong><br><br>` + resultado.join('<br><br>')
+        : "No se generaron iframes. Asegúrate de ingresar los IDs correctamente.";
+    }
+
+    function copiarResultado() {
+      const resultado = document.getElementById('output').innerText;
+      if (!resultado.trim()) {
+        alert("No hay contenido para copiar");
+        return;
+      }
+      navigator.clipboard.writeText(resultado).then(() => {
+        alert("¡Iframes copiados al portapapeles!");
+      });
+    }
+  </script>
+</body>
+</html>

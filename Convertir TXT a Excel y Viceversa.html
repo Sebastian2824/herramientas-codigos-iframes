@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertir TXT a Excel y Viceversa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f8e9;
+            color: #2e7d32;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h2 {
+            color: #1b5e20;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            border-bottom: 2px solid #4caf50;
+            padding-bottom: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .converter-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .converter-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #e8f5e9;
+            border-radius: 10px;
+            border: 2px solid #4caf50;
+        }
+        
+        .section-title {
+            color: #2e7d32;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background-color: #4caf50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        button:hover {
+            background-color: #388e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .file-input-label {
+            padding: 12px 25px;
+            border-radius: 25px;
+            background-color: #81c784;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-input-label:hover {
+            background-color: #66bb6a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .info-text {
+            color: #2e7d32;
+            font-style: italic;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="converter-container">
+        <h2>📊 Convertidor TXT ↔ Excel</h2>
+        
+        <div class="converter-section">
+            <h3 class="section-title">📝 TXT a Excel</h3>
+            <p class="info-text">Convierte archivos de texto (.txt) a formato Excel (.xlsx)</p>
+            <div class="button-container">
+                <label for="fileInput" class="file-input-label">📂 Seleccionar archivo TXT</label>
+                <input type="file" id="fileInput" accept=".txt">
+                <button onclick="convertirAExcel()">⏬ Convertir a Excel</button>
+            </div>
+        </div>
+        
+        <div class="converter-section">
+            <h3 class="section-title">📈 Excel a TXT</h3>
+            <p class="info-text">Convierte archivos Excel (.xlsx) a formato de texto (.txt)</p>
+            <div class="button-container">
+                <label for="excelInput" class="file-input-label">📂 Seleccionar archivo Excel</label>
+                <input type="file" id="excelInput" accept=".xlsx">
+                <button onclick="convertirATxt()">⏬ Convertir a TXT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function convertirAExcel() {
+            const input = document.getElementById('fileInput');
+            if (!input.files.length) {
+                alert('Por favor, selecciona un archivo de texto.');
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const lines = event.target.result.split('\n').map(line => [line.trim()]);
+                const ws = XLSX.utils.aoa_to_sheet(lines);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Datos");
+                XLSX.writeFile(wb, file.name.replace('.txt', '') + ".xlsx");
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function convertirATxt() {
+            const input = document.getElementById('excelInput');
+            if (!input.files.length) {
+                alert('Por favor, selecciona un archivo de Excel.');
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const data = new Uint8Array(event.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                const text = rows.map(row => row.join('\t')).join('\n');
+                
+                const blob = new Blob([text], { type: 'text/plain' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = file.name.replace('.xlsx', '') + ".txt";
+                link.click();
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+</body>
+</html>

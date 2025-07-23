@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Extraer enlaces de Google Drive</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+    
+    h2 {
+      color: #00a650;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 28px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #007a3d;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    
+    input[type="text"]:focus {
+      border-color: #00a650;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 166, 80, 0.2);
+    }
+    
+    button {
+      background-color: #00a650;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    
+    button:hover {
+      background-color: #008a43;
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    #result {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-top: 25px;
+    }
+    
+    #result p {
+      margin: 10px 0;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    #result p:last-child {
+      border-bottom: none;
+    }
+    
+    #result a {
+      color: #00a650;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    
+    #result a:hover {
+      text-decoration: underline;
+    }
+    
+    #result strong {
+      color: #007a3d;
+    }
+    
+    .button-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    let archivosExtraidos = []; // Se usará para almacenar los archivos obtenidos
+
+    function extractFolderID(url) {
+      const match = url.match(/[-\w]{25,}/);
+      return match ? match[0] : null;
+    }
+
+    async function getDriveLinks() {
+      const folderUrl = document.getElementById('folderUrl').value.trim();
+      const apiKey = document.getElementById('apiKey').value.trim();
+
+      if (!apiKey) {
+        alert('Por favor ingresa tu clave API.');
+        return;
+      }
+
+      const folderId = extractFolderID(folderUrl);
+      if (!folderId) {
+        alert('URL no válida. Asegúrate de ingresar un enlace de Google Drive.');
+        return;
+      }
+
+      const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents&key=${apiKey}&fields=files(id,name,webViewLink)`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const resultContainer = document.getElementById('result');
+        resultContainer.innerHTML = '';
+        archivosExtraidos = [];
+
+        if (!data.files || data.files.length === 0) {
+          resultContainer.innerHTML = '<p>No se encontraron archivos en esta carpeta.</p>';
+          return;
+        }
+
+        data.files.forEach(file => {
+          const link = document.createElement('p');
+          link.innerHTML = `<strong>${file.name}:</strong> <a href="${file.webViewLink}" target="_blank">${file.webViewLink}</a>`;
+          resultContainer.appendChild(link);
+
+          archivosExtraidos.push({
+            nombre: file.name,
+            enlace: file.webViewLink
+          });
+        });
+
+        document.getElementById('copyBtn').style.display = 'inline-block';
+        document.getElementById('excelBtn').style.display = 'inline-block';
+
+      } catch (error) {
+        console.error('Error al obtener los archivos:', error);
+        alert('Hubo un error al obtener los archivos. Revisa la consola para más detalles.');
+      }
+    }
+
+    function copiarResultados() {
+      const textToCopy = archivosExtraidos
+        .map(f => `${f.nombre}: ${f.enlace}`)
+        .join('\n');
+
+      navigator.clipboard.writeText(textToCopy)
+        .then(() => alert('¡Resultados copiados al portapapeles!'))
+        .catch(err => {
+          console.error('Error al copiar:', err);
+          alert('No se pudo copiar. Intenta de nuevo.');
+        });
+    }
+
+    function exportarExcel() {
+      if (archivosExtraidos.length === 0) {
+        alert('No hay datos para exportar.');
+        return;
+      }
+
+      const datos = archivosExtraidos.map(f => [f.nombre, f.enlace]);
+      const hoja = XLSX.utils.aoa_to_sheet([['Nombre del Archivo', 'Enlace'], ...datos]);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, 'Enlaces');
+
+      XLSX.writeFile(libro, 'EnlacesGoogleDrive.xlsx');
+    }
+  </script>
+</head>
+<body>
+  <h2>Extraer enlaces de una carpeta de Google Drive</h2>
+
+  <label>Clave API de Google Drive:</label>
+  <input type="text" id="apiKey" placeholder="Ingresa tu clave API">
+
+  <label>Enlace del folder de Google Drive:</label>
+  <input type="text" id="folderUrl" placeholder="Pega el enlace del folder de Drive">
+
+  <div class="button-container">
+    <button onclick="getDriveLinks()">Obtener enlaces</button>
+    <button id="copyBtn" onclick="copiarResultados()" style="display:none;">Copiar resultados</button>
+    <button id="excelBtn" onclick="exportarExcel()" style="display:none;">Exportar a Excel</button>
+  </div>
+
+  <div id="result"></div>
+</body>
+</html>

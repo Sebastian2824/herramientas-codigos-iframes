@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herramientas Web</title>
+    <style>
+        :root {
+            --yape-green: #00c853;
+            --yape-dark-green: #009624;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-gray);
+        }
+        
+        .menu-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: var(--yape-dark-green);
+            margin: 0;
+        }
+        
+        .logout-btn {
+            background-color: var(--yape-green);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background-color: var(--yape-dark-green);
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .menu-category {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .category-title {
+            background-color: var(--yape-green);
+            color: white;
+            padding: 15px;
+            margin: 0;
+            font-size: 1.2em;
+        }
+        
+        .menu-items {
+            padding: 15px;
+        }
+        
+        .menu-item {
+            display: block;
+            padding: 12px 10px;
+            margin-bottom: 8px;
+            background-color: var(--light-gray);
+            color: var(--yape-dark-green);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .menu-item:hover {
+            background-color: var(--yape-green);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .menu-item i {
+            margin-right: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="menu-container">
+        <div class="header">
+            <h1>Herramientas Web</h1>
+            <button class="logout-btn" onclick="window.location.href='index.html'">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+        </div>
+        
+        <div class="menu-grid">
+            <!-- Conversión de Formatos -->
+            <div class="menu-category">
+                <h2 class="category-title"><i class="fas fa-exchange-alt"></i> Conversión de Formatos</h2>
+                <div class="menu-items">
+                    <a href="Convertir TXT a Excel y Viceversa.html" class="menu-item">
+                        <i class="fas fa-file-excel"></i> TXT ↔ Excel
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Extracción de IDs/Enlaces -->
+            <div class="menu-category">
+                <h2 class="category-title"><i class="fas fa-link"></i> Extracción</h2>
+                <div class="menu-items">
+                    <a href="Extractor de Enlaces de Archivos Drive.html" class="menu-item">
+                        <i class="fab fa-google-drive"></i> Enlaces Drive
+                    </a>
+                    <a href="Extractor de ID de Dailymotion.html" class="menu-item">
+                        <i class="fab fa-dailymotion"></i> ID Dailymotion
+                    </a>
+                    <a href="Extractor de ID de OKru.html" class="menu-item">
+                        <i class="fas fa-play-circle"></i> ID OKru
+                    </a>
+                    <a href="Extractor de IDs de Google Drive o Mega.html" class="menu-item">
+                        <i class="fas fa-id-card"></i> IDs Drive/Mega
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Generadores de Iframes -->
+            <div class="menu-category">
+                <h2 class="category-title"><i class="fas fa-code"></i> Generadores de Iframe</h2>
+                <div class="menu-items">
+                    <a href="Generador de Iframes de Abyss a partir de su Enlace.html" class="menu-item">
+                        <i class="fas fa-film"></i> Abyss
+                    </a>
+                    <a href="Generador de Iframes de BitChute a partir de su Enlace.html" class="menu-item">
+                        <i class="fab fa-bity"></i> BitChute
+                    </a>
+                    <a href="Generador de Iframes de Dailymotion a partir de la ID.html" class="menu-item">
+                        <i class="fab fa-dailymotion"></i> Dailymotion
+                    </a>
+                    <a href="Generador de Iframes de Drive y Mega a partir de la ID.html" class="menu-item">
+                        <i class="fab fa-google-drive"></i> Drive/Mega
+                    </a>
+                    <a href="Generador de Iframes de OKru a partir de la ID.html" class="menu-item">
+                        <i class="fas fa-play-circle"></i> OKru
+                    </a>
+                    <a href="Generador de Iframes de Rumble a partir de su Enlace.html" class="menu-item">
+                        <i class="fas fa-video"></i> Rumble
+                    </a>
+                    <a href="Generador de Iframes de StreamHG.html" class="menu-item">
+                        <i class="fas fa-stream"></i> StreamHG
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Generadores Varios -->
+            <div class="menu-category">
+                <h2 class="category-title"><i class="fas fa-tools"></i> Otras Herramientas</h2>
+                <div class="menu-items">
+                    <a href="Generador de Enlaces de Descarga de Drive.html" class="menu-item">
+                        <i class="fab fa-google-drive"></i> Enlaces Descarga Drive
+                    </a>
+                    <a href="Generador de Reproductor de Video.html" class="menu-item">
+                        <i class="fas fa-play"></i> Reproductor Video
+                    </a>
+                    <a href="Generador de Separador de Swicth.html" class="menu-item">
+                        <i class="fas fa-code-branch"></i> Separador Switch
+                    </a>
+                    <a href="Generador para Agrupar los Swicth de Incrustación.html" class="menu-item">
+                        <i class="fas fa-object-group"></i> Agrupador Switch
+                    </a>
+                    <a href="Modificación de Enlaces de Dailymotion.html" class="menu-item">
+                        <i class="fab fa-dailymotion"></i> Mod. Enlaces Dailymotion
+                    </a>
+                    <a href="Modificación de Enlaces de Drive.html" class="menu-item">
+                        <i class="fab fa-google-drive"></i> Mod. Enlaces Drive
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Generador de bloques con // episodio</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #f5fff9;
+      color: #333;
+    }
+    
+    h2 {
+      color: #00a650;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 28px;
+      border-bottom: 2px solid #e0f5e8;
+      padding-bottom: 10px;
+    }
+    
+    h3 {
+      color: #007a3d;
+      margin: 20px 0 10px;
+    }
+    
+    textarea, pre {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #d0e8d7;
+      border-radius: 10px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 14px;
+      background-color: #f9f9f9;
+      margin: 10px 0;
+      white-space: pre-wrap;
+      transition: all 0.3s;
+    }
+    
+    textarea:focus, pre:focus {
+      border-color: #00a650;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 166, 80, 0.2);
+    }
+    
+    button {
+      background-color: #00a650;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background-color: #008a43;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 166, 80, 0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+    
+    code {
+      background-color: #e0f5e8;
+      color: #007a3d;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #007a3d;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 166, 80, 0.1);
+    }
+    
+    /* Estilo para el botón de copiar */
+    button:nth-of-type(2) {
+      background-color: #e0f5e8;
+      color: #007a3d;
+      border: 1px solid #00a650;
+    }
+    
+    button:nth-of-type(2):hover {
+      background-color: #c8eed6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Generador de bloques con <code>// episodio</code></h2>
+
+    <label>Pega tus bloques <code>switch(platform)</code> aquí:</label>
+    <textarea id="inputCode" placeholder="Pega aquí uno o varios bloques switch(platform)..."></textarea>
+
+    <div class="button-group">
+      <button onclick="generate()">Generar bloques con comentarios</button>
+      <button onclick="copyToClipboard()">📋 Copiar resultado</button>
+    </div>
+
+    <h3>Resultado (listo para el conversor):</h3>
+    <pre id="outputCode"></pre>
+  </div>
+
+  <script>
+    function generate() {
+      const input = document.getElementById("inputCode").value.trim();
+
+      // Separar por switch(platform) con o sin espacio después de 'switch'
+      const blocks = input.split(/(?=switch\s*\(platform\))/g);
+
+      if (blocks.length === 0 || !input.includes("switch")) {
+        document.getElementById("outputCode").textContent = "⚠️ No se detectaron bloques switch(platform).";
+        return;
+      }
+
+      const result = blocks
+        .map((block, i) => `// episodio ${i + 1}\n${block.trim()}`)
+        .join("\n\n");
+
+      document.getElementById("outputCode").textContent = result;
+    }
+
+    function copyToClipboard() {
+      const output = document.getElementById("outputCode").textContent;
+      if (!output.trim()) {
+        alert("⚠️ No hay contenido para copiar.");
+        return;
+      }
+      navigator.clipboard.writeText(output)
+        .then(() => alert("✅ Resultado copiado al portapapeles."))
+        .catch(err => alert("❌ Error al copiar: " + err));
+    }
+  </script>
+</body>
+</html>

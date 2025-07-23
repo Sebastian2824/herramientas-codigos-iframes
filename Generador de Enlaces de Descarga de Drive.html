@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Enlaces de Descarga</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #f5fff9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        h1 {
+            color: #00a650;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+            border-bottom: 2px solid #e0f5e8;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            color: #007a3d;
+            margin: 25px 0 15px;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #d0e8d7;
+            border-radius: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            transition: all 0.3s;
+            background-color: white;
+        }
+        
+        textarea:focus {
+            border-color: #00a650;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 166, 80, 0.2);
+        }
+        
+        #inputLinks {
+            height: 150px;
+        }
+        
+        #outputLinks {
+            height: 100px;
+        }
+        
+        button {
+            background-color: #00a650;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px 0;
+        }
+        
+        button:hover {
+            background-color: #008a43;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 166, 80, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .file-upload-label {
+            background-color: #e0f5e8;
+            color: #007a3d;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 10px 0;
+            border: 1px dashed #00a650;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .file-upload-label:hover {
+            background-color: #c8eed6;
+        }
+        
+        .file-upload-label::before {
+            content: "📁 ";
+        }
+        
+        .output {
+            margin-top: 30px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 166, 80, 0.1);
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 166, 80, 0.1);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generador de Enlaces de Descarga Directa</h1>
+        <p>Introduce los enlaces de Google Drive (uno por línea) o carga un archivo con ellos:</p>
+
+        <textarea id="inputLinks" placeholder="Pega aquí tus enlaces..."></textarea>
+        <br>
+        <label for="fileInput" class="file-upload-label">Seleccionar archivo</label>
+        <input type="file" id="fileInput">
+        
+        <div class="button-group">
+            <button onclick="generateLinks()">Generar Enlaces</button>
+        </div>
+
+        <div class="output">
+            <h2>Enlaces de Descarga Generados:</h2>
+            <textarea id="outputLinks" readonly></textarea>
+            <br>
+            <button onclick="downloadLinks()">Descargar Resultado</button>
+        </div>
+    </div>
+
+    <script>
+        // Función para procesar los enlaces y generar los nuevos
+        function generateLinks() {
+            const inputText = document.getElementById('inputLinks').value;
+            const lines = inputText.split('\n');
+            const baseURL = 'https://drive.google.com/uc?export=download&id=';
+            let output = [];
+
+            lines.forEach(line => {
+                const match = line.match(/[-\w]{25,}/); // Buscar la ID del enlace
+                if (match) {
+                    output.push(baseURL + match[0]);
+                }
+            });
+
+            document.getElementById('outputLinks').value = output.join('\n');
+        }
+
+        // Función para manejar la carga de archivos
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('inputLinks').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Función para descargar los enlaces generados como archivo
+        function downloadLinks() {
+            const outputText = document.getElementById('outputLinks').value;
+            const blob = new Blob([outputText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'enlaces_descarga.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

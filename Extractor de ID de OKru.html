@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Extractor de ID de OK.ru</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      padding: 25px;
+      background-color: #f1f8e9;
+      color: #2e7d32;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #1b5e20;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      border-bottom: 2px solid #4caf50;
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-top: 15px;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      background-color: #e8f5e9;
+      color: #1b5e20;
+      resize: vertical;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    button:hover {
+      background-color: #388e3c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    #fileInput {
+      display: none;
+    }
+    
+    .file-input-label {
+      padding: 10px 20px;
+      border-radius: 25px;
+      background-color: #81c784;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .file-input-label:hover {
+      background-color: #66bb6a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    #output {
+      margin-top: 25px;
+      white-space: pre-wrap;
+      background: #e8f5e9;
+      padding: 15px;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      color: #1b5e20;
+      font-family: monospace;
+      min-height: 50px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🎬 Extractor de ID de videos de OK.ru</h2>
+
+    <div class="buttons">
+      <label for="fileInput" class="file-input-label">📂 Cargar desde archivo</label>
+      <input type="file" id="fileInput">
+      <button onclick="extraerIDs()">🔍 Extraer IDs</button>
+    </div>
+
+    <textarea id="inputText" placeholder="Pega aquí tus enlaces de OK.ru (ejemplo: https://ok.ru/video/123456789)"></textarea>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    document.getElementById('fileInput').addEventListener('change', function (event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById('inputText').value = reader.result;
+      };
+      reader.readAsText(event.target.files[0]);
+    });
+
+    function extraerIDs() {
+      const input = document.getElementById('inputText').value;
+      const lines = input.split(/\r?\n/);
+      const ids = [];
+
+      lines.forEach(link => {
+        const match = link.match(/ok\.ru\/video\/(\d+)/);
+        if (match) ids.push(match[1]);
+      });
+
+      document.getElementById('output').innerHTML = ids.length
+        ? `<strong>IDs extraídas (${ids.length}):</strong><br>` + ids.join('<br>')
+        : "No se encontraron IDs válidas de OK.ru";
+    }
+  </script>
+</body>
+</html>

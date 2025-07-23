@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Convertidor de Iframes (Múltiples episodios)</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #f5fff9;
+      color: #333;
+    }
+    
+    h2 {
+      color: #00a650;
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 28px;
+      border-bottom: 2px solid #e0f5e8;
+      padding-bottom: 10px;
+    }
+    
+    h3 {
+      color: #007a3d;
+      margin: 20px 0 10px;
+    }
+    
+    textarea, pre {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #d0e8d7;
+      border-radius: 10px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 14px;
+      background-color: #f9f9f9;
+      margin: 10px 0;
+      transition: all 0.3s;
+    }
+    
+    textarea:focus, pre:focus {
+      border-color: #00a650;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 166, 80, 0.2);
+    }
+    
+    button {
+      background-color: #00a650;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background-color: #008a43;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 166, 80, 0.2);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    input[type="file"] {
+      display: none;
+    }
+    
+    .file-upload-label {
+      background-color: #e0f5e8;
+      color: #007a3d;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-block;
+      margin: 10px 0;
+      border: 1px dashed #00a650;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    
+    .file-upload-label:hover {
+      background-color: #c8eed6;
+    }
+    
+    .file-upload-label::before {
+      content: "📁 ";
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 166, 80, 0.1);
+    }
+    
+    #copyButton {
+      background-color: #e0f5e8;
+      color: #007a3d;
+      border: 1px solid #00a650;
+    }
+    
+    #copyButton:hover {
+      background-color: #c8eed6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Convertidor de Iframes (Múltiples Episodios)</h2>
+
+    <label>Pega tu código aquí:</label>
+    <textarea id="inputCode" placeholder="Pega aquí múltiples bloques switch con embedCode..."></textarea>
+
+    <label for="fileInput" class="file-upload-label">Seleccionar archivo</label>
+    <input type="file" id="fileInput" accept=".txt,.js" />
+    
+    <div class="button-group">
+      <button id="convertButton" onclick="convert()">Convertir</button>
+      <button id="copyButton" style="display:none;">Copiar resultado</button>
+    </div>
+
+    <h3>Resultado:</h3>
+    <pre id="outputCode"></pre>
+  </div>
+
+  <script>
+    document.getElementById("fileInput").addEventListener("change", function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById("inputCode").value = e.target.result;
+      };
+      reader.readAsText(file);
+    });
+
+    function convert() {
+      const input = document.getElementById("inputCode").value;
+
+      const blocks = input.split(/\/\/\s*episodio\s*/i).filter(b => b.trim() !== "");
+
+      const episodes = [];
+
+      blocks.forEach((block, index) => {
+        const results = {};
+        let match;
+
+        const templateRegex = /case\s+'([^']+)':\s+embedCode\s*=\s*`([^`]+)`;?/g;
+        const simpleRegex = /case\s+'([^']+)':\s+embedCode\s*=\s*'([^']+)';?/g;
+
+        while ((match = templateRegex.exec(block)) !== null) {
+          const key = match[1];
+          const value = match[2].replace(/\s+/g, ' ').trim();
+          results[key] = value;
+        }
+
+        while ((match = simpleRegex.exec(block)) !== null) {
+          const key = match[1];
+          const value = match[2].replace(/\s+/g, ' ').trim();
+          results[key] = value;
+        }
+
+        episodes.push({
+          name: `Episodio ${index + 1}`,
+          embeds: results
+        });
+      });
+
+      // Formatear a mano como objeto JS, sin comillas en claves
+      const formatted = episodes.map(ep => {
+        const embeds = Object.entries(ep.embeds).map(([key, value]) => {
+          return `  "${key}": '${value}'`;
+        }).join(",\n");
+
+        return `{\n  name: "${ep.name}",\n  embeds: {\n${embeds}\n  }\n}`;
+      }).join(",\n\n");
+
+      document.getElementById("outputCode").textContent = formatted;
+
+      document.getElementById("copyButton").style.display = "inline-block";
+    }
+
+    document.getElementById("copyButton").addEventListener("click", () => {
+      const outputCode = document.getElementById("outputCode").textContent;
+      navigator.clipboard.writeText(outputCode).then(() => {
+        alert("✅ Resultado copiado al portapeles");
+      }).catch(() => {
+        alert("❌ Error al copiar al portapeles");
+      });
+    });
+  </script>
+</body>
+</html>

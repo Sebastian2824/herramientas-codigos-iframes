@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertir Enlaces de Drive</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #f5fff9;
+            color: #333;
+        }
+        
+        h2 {
+            color: #00a650;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 28px;
+            border-bottom: 2px solid #e0f5e8;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #007a3d;
+            margin: 20px 0 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #d0e8d7;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: white;
+            resize: vertical;
+        }
+        
+        textarea:focus {
+            border-color: #00a650;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 166, 80, 0.2);
+        }
+        
+        button {
+            background-color: #00a650;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 15px 0;
+            display: block;
+            width: 200px;
+            text-align: center;
+        }
+        
+        button:hover {
+            background-color: #008a43;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 166, 80, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .file-input-label {
+            background-color: #e0f5e8;
+            color: #007a3d;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 10px 0;
+            border: 1px dashed #00a650;
+            transition: all 0.3s;
+        }
+        
+        .file-input-label:hover {
+            background-color: #c8eed6;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 166, 80, 0.1);
+        }
+        
+        .input-section, .output-section {
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Convertir enlaces de Google Drive</h2>
+        
+        <div class="input-section">
+            <textarea id="inputLinks" rows="10" placeholder="Pegue los enlaces aquí..."></textarea>
+            <br>
+            <label for="fileInput" class="file-input-label">📁 Seleccionar archivo de texto</label>
+            <input type="file" id="fileInput">
+            <button onclick="convertLinks()">Convertir</button>
+        </div>
+        
+        <div class="output-section">
+            <h3>Enlaces Convertidos:</h3>
+            <textarea id="outputLinks" rows="10" readonly></textarea>
+        </div>
+    </div>
+    
+    <script>
+        function convertLinks() {
+            let inputText = document.getElementById("inputLinks").value;
+            let convertedText = inputText.replace(/usp=drivesdk/g, "usp=sharing");
+            document.getElementById("outputLinks").value = convertedText;
+        }
+
+        document.getElementById("fileInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById("inputLinks").value = e.target.result;
+            };
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Códigos IFRAME</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      padding: 25px;
+      background-color: #f1f8e9;
+      color: #2e7d32;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #1b5e20;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      border-bottom: 2px solid #4caf50;
+      padding-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    h3 {
+      color: #2e7d32;
+      margin: 20px 0 10px;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 200px;
+      margin: 10px 0 15px;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      background-color: #e8f5e9;
+      color: #1b5e20;
+      resize: vertical;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    #output {
+      white-space: pre-wrap;
+      background: #e8f5e9;
+      padding: 15px;
+      border: 2px solid #4caf50;
+      border-radius: 10px;
+      color: #1b5e20;
+      font-family: monospace;
+      height: 200px;
+      overflow-y: auto;
+      margin: 15px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 25px;
+      background-color: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 5px 0;
+    }
+    
+    button:hover {
+      background-color: #388e3c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    #fileInput {
+      display: none;
+    }
+    
+    .file-input-label {
+      padding: 10px 20px;
+      border-radius: 25px;
+      background-color: #81c784;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: 10px;
+    }
+    
+    .file-input-label:hover {
+      background-color: #66bb6a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    label {
+      color: #2e7d32;
+      font-weight: bold;
+      margin-top: 15px;
+      display: block;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .info-text {
+      color: #2e7d32;
+      font-style: italic;
+      margin: 5px 0 15px;
+    }
+    
+    .button-container {
+      margin: 15px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🖥️ Generador de Códigos IFRAME</h2>
+    <p class="info-text">Modifica automáticamente el ancho y alto de tus iframes</p>
+
+    <label for="fileInput">Importar archivo .txt:</label>
+    <div class="button-container">
+      <label for="fileInput" class="file-input-label">📂 Seleccionar archivo</label>
+      <input type="file" id="fileInput" accept=".txt">
+    </div>
+
+    <label for="inputText">Pegar código manualmente:</label>
+    <textarea id="inputText" placeholder="Ejemplo: &lt;iframe width='600' height='300' src='...'&gt;&lt;/iframe&gt;"></textarea>
+
+    <div class="button-container">
+      <button onclick="generar()">✨ Generar Código Modificado</button>
+      <button onclick="copiarResultado()">📋 Copiar código</button>
+    </div>
+
+    <h3>Resultado:</h3>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    function modificarIframe(codigo) {
+      // Reemplaza solo WIDTH=... y HEIGHT=... que no están precedidos por 'MARGIN'
+      const nuevoCodigo = codigo
+        .replace(/(?<!MARGIN)WIDTH=\d+/i, 'WIDTH=800')
+        .replace(/(?<!MARGIN)HEIGHT=\d+/i, 'HEIGHT=440');
+      return nuevoCodigo;
+    }
+
+    function generar() {
+      const input = document.getElementById('inputText').value;
+      if (!input.trim()) {
+        document.getElementById('output').innerHTML = '<span style="color:#d32f2f;">⚠️ No se ingresó ningún código</span>';
+        return;
+      }
+      
+      const lineas = input.split('\n');
+      const modificados = lineas.map(modificarIframe);
+      
+      const count = modificados.filter(c => c.includes('WIDTH=800') || c.includes('HEIGHT=440')).length;
+      const outputText = count > 0 
+        ? `/* ${count} iframe${count > 1 ? 's' : ''} modificado${count > 1 ? 's' : ''} */\n\n${modificados.join('\n\n')}`
+        : "⚠️ No se encontraron iframes válidos para modificar";
+      
+      document.getElementById('output').innerHTML = outputText;
+    }
+
+    function copiarResultado() {
+      const output = document.getElementById('output').textContent;
+      if (!output || output.includes("No se encontraron")) {
+        alert("No hay código válido para copiar");
+        return;
+      }
+      navigator.clipboard.writeText(output).then(() => {
+        alert("¡Código copiado al portapapeles!");
+      });
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('inputText').value = e.target.result;
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>
