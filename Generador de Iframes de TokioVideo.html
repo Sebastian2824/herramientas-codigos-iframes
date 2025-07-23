@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Modificador de Iframes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f2f2f2;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      font-family: monospace;
+      margin-bottom: 10px;
+    }
+    .output {
+      white-space: pre-wrap;
+      background: #fff;
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Generador de código iframe ajustado</h2>
+
+  <label for="fileInput">Importar archivo .txt con iframes:</label><br>
+  <input type="file" id="fileInput" accept=".txt"><br><br>
+
+  <label for="manualInput">O ingresar códigos manualmente:</label><br>
+  <textarea id="manualInput" placeholder="Pega aquí los códigos de iframe..."></textarea>
+
+  <button onclick="procesar()">Procesar</button>
+  <button onclick="copiarResultado()">Copiar resultado</button>
+
+  <h3>Código procesado:</h3>
+  <div class="output" id="resultado"></div>
+
+  <script>
+    function modificarDimensiones(html) {
+      return html.replace(/<iframe\s+([^>]*?)width="\d+"\s+height="\d+"/gi, 
+                          (match, attrs) => `<iframe ${attrs}width="800" height="440"`);
+    }
+
+    function procesar() {
+      const manual = document.getElementById("manualInput").value;
+      const resultado = modificarDimensiones(manual);
+      document.getElementById("resultado").innerText = resultado;
+    }
+
+    document.getElementById("fileInput").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file && file.type === "text/plain") {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const contenido = e.target.result;
+          const resultado = modificarDimensiones(contenido);
+          document.getElementById("manualInput").value = contenido;
+          document.getElementById("resultado").innerText = resultado;
+        };
+        reader.readAsText(file);
+      } else {
+        alert("Por favor, selecciona un archivo .txt válido.");
+      }
+    });
+
+    function copiarResultado() {
+      const texto = document.getElementById("resultado").innerText;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Resultado copiado al portapapeles.");
+      }).catch(err => {
+        alert("Error al copiar: " + err);
+      });
+    }
+  </script>
+
+</body>
+</html>
