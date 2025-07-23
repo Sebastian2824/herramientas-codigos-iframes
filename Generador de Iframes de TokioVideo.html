@@ -5,43 +5,102 @@
   <title>Modificador de Iframes</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Arial', sans-serif;
       padding: 20px;
-      background-color: #f2f2f2;
+      background-color: #f8fff2;
+      color: #333;
     }
     textarea {
       width: 100%;
       height: 200px;
-      padding: 10px;
+      padding: 12px;
       font-family: monospace;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
+      border: 2px solid #7ED321;
+      border-radius: 8px;
+      background-color: #fff;
+      font-size: 14px;
     }
     .output {
       white-space: pre-wrap;
       background: #fff;
-      padding: 10px;
-      border: 1px solid #ccc;
-      margin-top: 10px;
+      padding: 15px;
+      border: 2px solid #7ED321;
+      border-radius: 8px;
+      margin-top: 15px;
+      color: #333;
+      font-family: monospace;
+      font-size: 14px;
     }
     button {
-      padding: 10px 20px;
-      margin-right: 10px;
+      padding: 12px 24px;
+      margin-right: 12px;
+      margin-bottom: 10px;
       cursor: pointer;
+      background-color: #7ED321;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background-color: #68b71c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    h2 {
+      color: #5a9e1c;
+      font-size: 24px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0f7d0;
+      padding-bottom: 10px;
+    }
+    h3 {
+      color: #5a9e1c;
+      font-size: 20px;
+      margin-top: 25px;
+      margin-bottom: 15px;
+    }
+    input[type="file"] {
+      margin-bottom: 20px;
+      border: 2px solid #7ED321;
+      border-radius: 8px;
+      padding: 8px;
+      background-color: white;
+      width: 100%;
+      max-width: 400px;
+    }
+    label {
+      font-weight: bold;
+      color: #555;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .button-container {
+      margin: 20px 0;
     }
   </style>
 </head>
 <body>
 
-  <h2>Generador de código iframe ajustado</h2>
+  <h2>Generador de código iframe de TokioVideo</h2>
 
-  <label for="fileInput">Importar archivo .txt con iframes:</label><br>
-  <input type="file" id="fileInput" accept=".txt"><br><br>
+  <label for="fileInput">Importar archivo .txt con iframes:</label>
+  <input type="file" id="fileInput" accept=".txt">
 
-  <label for="manualInput">O ingresar códigos manualmente:</label><br>
+  <label for="manualInput">O ingresar códigos manualmente:</label>
   <textarea id="manualInput" placeholder="Pega aquí los códigos de iframe..."></textarea>
 
-  <button onclick="procesar()">Procesar</button>
-  <button onclick="copiarResultado()">Copiar resultado</button>
+  <div class="button-container">
+    <button onclick="procesar()">Procesar</button>
+    <button onclick="copiarResultado()">Copiar resultado</button>
+  </div>
 
   <h3>Código procesado:</h3>
   <div class="output" id="resultado"></div>
