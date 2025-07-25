@@ -137,12 +137,11 @@
     </div>
 
     <h3>Código HTML generado:</h3>
-    <div id="codigoGenerado"></div>
+    <textarea id="codigoGenerado" readonly></textarea>
     <button onclick="copiarCodigo()">📋 Copiar código</button>
   </div>
 
   <script>
-    // Leer archivo .txt y cargar en el textarea
     document.getElementById('fileInput').addEventListener('change', function (e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -154,11 +153,10 @@
       reader.readAsText(file);
     });
 
-    // Generar código iframe
     function convertirEnlaces() {
       const text = document.getElementById('inputText').value;
       const lines = text.split('\n');
-      const codigo = document.getElementById('codigoGenerado');
+      const output = document.getElementById('codigoGenerado');
       let resultado = '';
 
       lines.forEach(line => {
@@ -171,20 +169,19 @@
 
       if (resultado) {
         const count = (resultado.match(/<iframe/g) || []).length;
-        codigo.innerHTML = `<strong>${count} iframe${count > 1 ? 's' : ''} generado${count > 1 ? 's' : ''}:</strong><br><br>${resultado}`;
+        output.value = `/* ${count} iframe${count > 1 ? 's' : ''} generado${count > 1 ? 's' : ''} */\n\n${resultado}`;
       } else {
-        codigo.innerHTML = '<span style="color:#d32f2f;">⚠️ No se encontraron enlaces válidos de BitChute</span>';
+        output.value = '⚠️ No se encontraron enlaces válidos de BitChute';
       }
     }
 
-    // Copiar al portapapeles
     function copiarCodigo() {
-      const codigo = document.getElementById('codigoGenerado').textContent;
-      if (!codigo.trim() || codigo.includes('No se encontraron')) {
+      const codigo = document.getElementById('codigoGenerado');
+      if (!codigo.value.trim() || codigo.value.includes('No se encontraron')) {
         alert('No hay código válido para copiar');
         return;
       }
-      navigator.clipboard.writeText(codigo).then(() => {
+      navigator.clipboard.writeText(codigo.value).then(() => {
         alert('¡Código copiado al portapapeles!');
       }).catch(err => {
         alert('Error al copiar el código');
