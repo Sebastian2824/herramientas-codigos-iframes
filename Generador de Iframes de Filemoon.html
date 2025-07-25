@@ -143,8 +143,8 @@
       <input type="file" id="fileInput" accept=".txt">
     </div>
 
-    <label for="inputText">Pegar código manualmente:</label>
-    <textarea id="inputText" placeholder="Ejemplo: &lt;iframe width='600' height='300' src='...'&gt;&lt;/iframe&gt;"></textarea>
+    <label for="inputText">Pegar enlace manualmente:</label>
+    <textarea id="inputText" placeholder="Ejemplo: https://filemoon.to/d/lwf6g42xslgs"></textarea>
 
     <div class="button-container">
       <button onclick="generar()">✨ Generar Código Modificado</button>
@@ -156,53 +156,70 @@
   </div>
 
   <script>
-    function modificarIframe(codigo) {
-      // Reemplaza solo WIDTH=... y HEIGHT=... que no están precedidos por 'MARGIN'
-      const nuevoCodigo = codigo
-        .replace(/(?<!MARGIN)WIDTH=\d+/i, 'WIDTH=800')
-        .replace(/(?<!MARGIN)HEIGHT=\d+/i, 'HEIGHT=440');
-      return nuevoCodigo;
+  function esEnlaceFilemoon(linea) {
+    const regex = /^https:\/\/filemoon\.to\/d\/([\w\d]+)/;
+    const match = linea.trim().match(regex);
+    return match ? match[1] : null;
+  }
+
+  function convertirEnlaceAiframe(enlaceID) {
+    return `<iframe src="https://filemoon.to/e/${enlaceID}" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="800" height="440" allowfullscreen></iframe>`;
+  }
+
+  function modificarIframe(codigo) {
+    // Si es un enlace de Filemoon
+    const id = esEnlaceFilemoon(codigo);
+    if (id) {
+      return convertirEnlaceAiframe(id);
     }
 
-    function generar() {
-      const input = document.getElementById('inputText').value;
-      if (!input.trim()) {
-        document.getElementById('output').innerHTML = '<span style="color:#d32f2f;">⚠️ No se ingresó ningún código</span>';
-        return;
-      }
-      
-      const lineas = input.split('\n');
-      const modificados = lineas.map(modificarIframe);
-      
-      const count = modificados.filter(c => c.includes('WIDTH=800') || c.includes('HEIGHT=440')).length;
-      const outputText = count > 0 
-        ? `/* ${count} iframe${count > 1 ? 's' : ''} modificado${count > 1 ? 's' : ''} */\n\n${modificados.join('\n\n')}`
-        : "⚠️ No se encontraron iframes válidos para modificar";
-      
-      document.getElementById('output').innerHTML = outputText;
+    // Si ya es un iframe
+    const nuevoCodigo = codigo
+      .replace(/(?<!MARGIN)WIDTH=\d+/i, 'WIDTH=800')
+      .replace(/(?<!MARGIN)HEIGHT=\d+/i, 'HEIGHT=440');
+    return nuevoCodigo;
+  }
+
+  function generar() {
+    const input = document.getElementById('inputText').value;
+    if (!input.trim()) {
+      document.getElementById('output').textContent = '⚠️ No se ingresó ningún código';
+      return;
     }
 
-    function copiarResultado() {
-      const output = document.getElementById('output').textContent;
-      if (!output || output.includes("No se encontraron")) {
-        alert("No hay código válido para copiar");
-        return;
-      }
-      navigator.clipboard.writeText(output).then(() => {
-        alert("¡Código copiado al portapapeles!");
-      });
+    const lineas = input.split('\n');
+    const modificados = lineas.map(modificarIframe);
+
+    const count = modificados.filter(c => c.includes('iframe')).length;
+    const outputText = count > 0 
+      ? `/* ${count} iframe${count > 1 ? 's' : ''} generad${count > 1 ? 'os' : 'o'} */\n\n${modificados.join('\n\n')}`
+      : "⚠️ No se encontraron enlaces o códigos válidos para modificar";
+
+    // 👇 Aquí usamos textContent en vez de innerHTML
+    document.getElementById('output').textContent = outputText;
+  }
+
+  function copiarResultado() {
+    const output = document.getElementById('output').textContent;
+    if (!output || output.includes("No se encontraron")) {
+      alert("No hay código válido para copiar");
+      return;
     }
-
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('inputText').value = e.target.result;
-      };
-      reader.readAsText(file);
+    navigator.clipboard.writeText(output).then(() => {
+      alert("¡Código copiado al portapapeles!");
     });
-  </script>
+  }
+
+  document.getElementById('fileInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('inputText').value = e.target.result;
+    };
+    reader.readAsText(file);
+  });
+</script>
 </body>
 </html>
