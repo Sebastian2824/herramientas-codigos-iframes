@@ -175,7 +175,7 @@
         ? `/* ${count} iframe${count > 1 ? 's' : ''} generado${count > 1 ? 's' : ''} */\n\n${iframes.join('\n\n')}`
         : "⚠️ No se encontraron enlaces válidos de Rumble con /embed/";
       
-      document.getElementById('output').innerHTML = outputText;
+      document.getElementById('output').textContent = outputText;
     }
 
     function copiarResultado() {
