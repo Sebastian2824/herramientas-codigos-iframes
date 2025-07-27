@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador HTML desde Excel</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 25px;
+      background-color: #f8f9fa;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      color: #333;
+      margin-bottom: 25px;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    #excelFile {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin: 20px 0;
+      border: 2px dashed #00a64f;
+      border-radius: 10px;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    #excelFile:hover {
+      background-color: #f0fff5;
+      border-color: #008c45;
+    }
+    
+    button {
+      background-color: #00a64f; /* Verde Yape */
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 166, 79, 0.3);
+      display: block;
+      margin: 0 auto 25px;
+    }
+    
+    button:hover {
+      background-color: #008c45;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 166, 79, 0.4);
+    }
+    
+    button i {
+      margin-right: 10px;
+    }
+    
+    #output {
+      width: 100%;
+      height: 400px;
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 14px;
+      background-color: #272822;
+      color: #f8f8f2;
+      resize: vertical;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    #output:focus {
+      outline: none;
+      border-color: #00a64f;
+    }
+    
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <h2>Generador del Contenido del Video por Temporada</h2>
+  <input type="file" id="excelFile" accept=".xlsx, .xls" />
+  <button onclick="generateCode()">Generar Código</button>
+  <textarea id="output" placeholder="Aquí se generará el código..."></textarea>
+
+  <script>
+    let excelData = [];
+
+    document.getElementById('excelFile').addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        excelData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      };
+      reader.readAsArrayBuffer(e.target.files[0]);
+    });
+
+    function generateCode() {
+      if (excelData.length === 0) {
+        alert("Primero debes subir un archivo Excel.");
+        return;
+      }
+
+      const headers = excelData[0].slice(1); // nombres de servidores
+      const output = [];
+
+      for (let i = 1; i < excelData.length; i++) {
+        const row = excelData[i];
+        const episodeName = row[0];
+        const embeds = {};
+
+        for (let j = 1; j < row.length; j++) {
+          if (row[j]) {
+            embeds[headers[j - 1]] = row[j];
+          }
+        }
+
+        output.push({
+          name: `Episodio ${episodeName}`,
+          embeds
+        });
+      }
+
+      // Formato exacto con comillas dobles en claves de servidores y comillas simples en valores iframe
+      const customFormat = output.map(ep => {
+        let embedStr = Object.entries(ep.embeds).map(
+          ([k, v]) => `          "${k}": '${v.replace(/'/g, "\\'")}'`
+        ).join(',\n');
+
+        return `{
+        name: "${ep.name}",
+        embeds: {
+${embedStr}
+        }
+      }`;
+      }).join(',\n\n');
+
+      document.getElementById('output').value = customFormat;
+    }
+  </script>
+</body>
+</html>
+

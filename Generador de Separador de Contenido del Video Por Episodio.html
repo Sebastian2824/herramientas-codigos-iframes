@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Código Switch desde Excel</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+   <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      margin-top: 20px;
+      font-family: monospace;
+      background: #272822;
+      color: #f8f8f2;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      resize: vertical;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .btn {
+      background: #00a64f; /* Verde Yape */
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      cursor: pointer;
+      border-radius: 30px;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 166, 79, 0.3);
+    }
+    .btn:hover {
+      background: #008c45; /* Verde Yape más oscuro */
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 166, 79, 0.4);
+    }
+    .btn i {
+      margin-right: 10px;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    #inputExcel {
+      display: block;
+      margin: 15px 0;
+      padding: 10px;
+      border: 2px dashed #00a64f;
+      border-radius: 8px;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Generador del Contenido del Video por Episodio <code>switch</code></h2>
+  <input type="file" id="inputExcel" accept=".xlsx" />
+  <button class="btn" onclick="generarCodigo()">Generar Código</button>
+
+  <textarea id="codigoGenerado" readonly placeholder="El código generado aparecerá aquí..."></textarea>
+
+  <script>
+    let datosExcel = [];
+
+    document.getElementById('inputExcel').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        datosExcel = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false });
+        console.log('Datos leídos:', datosExcel);
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    function generarCodigo() {
+      if (!datosExcel || datosExcel.length === 0) {
+        alert("No se han cargado datos. Asegúrate de subir un archivo válido.");
+        return;
+      }
+
+      let output = "";
+      let filaInicio = 0;
+
+      // Detectar si la primera fila contiene encabezados
+      if (datosExcel[0][0]?.toString().toLowerCase().includes('servidor')) {
+        filaInicio = 1;
+      }
+
+      for (let i = filaInicio; i < datosExcel.length; i++) {
+        const fila = datosExcel[i];
+        const servidor = fila[0]?.toString().trim();
+        const iframe = fila[1]?.toString().trim();
+
+        if (servidor && iframe && iframe.includes('<iframe')) {
+          output += `case '${servidor}':\n`;
+          output += `    embedCode = \`${iframe}\`;\n`;
+          output += `    break;\n\n`;
+        }
+      }
+
+      document.getElementById("codigoGenerado").value = output.trim() || "// No se generó ningún código. Verifica el contenido del archivo.";
+    }
+  </script>
+
+</body>
+</html>
