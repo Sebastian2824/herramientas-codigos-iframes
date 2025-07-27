@@ -182,8 +182,8 @@
         </div>
         
         <div class="input-group">
-            <label>Código de StreamHG:</label>
-            <textarea id="StreamHGCode" placeholder="Ejemplo: &lt;iframe src='https://streamhg.com/...'>&lt;/iframe>"></textarea>
+            <label>Código de Filemoon:</label>
+            <textarea id="FilemoonCode" placeholder="Ejemplo: &lt;iframe src='https://streamhg.com/...'>&lt;/iframe>"></textarea>
         </div>
 
         <div class="input-group">
@@ -215,7 +215,7 @@
         const dailymotionCode = document.getElementById('dailymotionCode').value;
         const abyssCode = document.getElementById('abyssCode').value;
         const OkruCode = document.getElementById('OkruCode').value;
-        const StreamHGCode = document.getElementById('StreamHGCode').value;
+        const FilemoonCode = document.getElementById('FilemoonCode').value;
         const RumbleCode = document.getElementById('RumbleCode').value;
         const BitchuteCode = document.getElementById('BitchuteCode').value;
         const OdyseeCode = document.getElementById('OdyseeCode').value;
@@ -339,7 +339,7 @@
             <button class="control-btn" onclick="changeVideo('Dailymotion')">Dailymotion</button>
             <button class="control-btn" onclick="changeVideo('Abyss')">Abyss</button>
             <button class="control-btn" onclick="changeVideo('Okru')">Okru</button>
-            <button class="control-btn" onclick="changeVideo('StreamHG')">StreamHG</button>
+            <button class="control-btn" onclick="changeVideo('Filemoon')">Filemoon</button>
             <button class="control-btn" onclick="changeVideo('Rumble')">Rumble</button>
             <button class="control-btn" onclick="changeVideo('Bitchute')">Bitchute</button>
             <button class="control-btn" onclick="changeVideo('Odysee')">Odysee</button>
@@ -376,8 +376,8 @@
                     case 'Okru':
                         embedCode = \`${OkruCode}\`;
                         break;
-                    case 'StreamHG':
-                        embedCode = \`${StreamHGCode}\`;
+                    case 'Filemoon':
+                        embedCode = \`${FilemoonCode}\`;
                         break;
                     case 'Rumble':
                         embedCode = \`${RumbleCode}\`;
