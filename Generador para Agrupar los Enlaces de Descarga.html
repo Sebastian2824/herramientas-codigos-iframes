@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Botones de Episodios</title>
+   <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f9f5;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    
+    h2 {
+      color: #00a859;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    input[type="file"] {
+      display: block;
+      margin: 0 auto;
+      padding: 10px 15px;
+      background-color: #00a859;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    
+    input[type="file"]:hover {
+      background-color: #008e4a;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 300px;
+      margin-top: 20px;
+      font-family: monospace;
+      border: 2px solid #00a859;
+      border-radius: 8px;
+      padding: 15px;
+      background-color: #f0f7f0;
+      color: #006341;
+      font-size: 14px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: #006341;
+      box-shadow: 0 0 0 2px rgba(0, 168, 89, 0.2);
+    }
+    
+    .item-list-button {
+      background-color: #00a859;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .item-list-button:hover {
+      background-color: #008e4a;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <h2>Generador para Agrupar los Enlaces de Descarga</h2>
+  <input type="file" id="excelFile" accept=".xlsx" />
+  <textarea id="outputCode" placeholder="Aquí aparecerá el resultado en HTML..."></textarea>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    document.getElementById('excelFile').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        const headers = json[0];
+        const rows = json.slice(1);
+        let result = '';
+
+        rows.forEach(row => {
+          const episodio = row[0];
+          let driveLink = '';
+          let teraboxLink = '';
+
+          headers.forEach((server, index) => {
+            const link = row[index];
+            if (!link) return;
+
+            if (server.toLowerCase().includes('drive')) {
+  if (link.includes('uc?export=download&id=')) {
+    // Enlace ya listo para descarga directa
+    driveLink = link;
+  } else {
+    let fileId = '';
+
+    if (link.includes('id=')) {
+      const match = link.match(/id=([a-zA-Z0-9_-]+)/);
+      if (match) fileId = match[1];
+    } else if (link.includes('/d/')) {
+      const match = link.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (match) fileId = match[1];
+    }
+
+    if (fileId) {
+      driveLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+    }
+  }
+}
+
+
+            if (server.toLowerCase().includes('terabox')) {
+              teraboxLink = link;
+            }
+          });
+
+          const episodioTexto = String(episodio).padStart(2, '0');
+          let html = `<li class="item-list"><button class="item-list-button"`;
+
+          if (driveLink) html += ` data-link="${driveLink}"`;
+          if (teraboxLink) html += ` data-terabox="${teraboxLink}"`;
+
+          html += `>${episodioTexto}</button></li>\n`;
+
+          result += html;
+        });
+
+        document.getElementById('outputCode').value = result.trim();
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+</body>
+</html>
