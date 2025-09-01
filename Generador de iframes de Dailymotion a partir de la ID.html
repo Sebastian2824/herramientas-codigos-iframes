@@ -141,7 +141,7 @@
       const ids = input.split(/\s+/).filter(id => id.trim() !== "");
       
       if (ids.length === 0) {
-        document.getElementById('iframeOutput').innerHTML = "⚠️ No se ingresaron IDs válidas";
+        document.getElementById('iframeOutput').textContent = "⚠️ No se ingresaron IDs válidas";
         return;
       }
       
@@ -149,8 +149,8 @@
         `<iframe width="800" height="440" src="https://www.dailymotion.com/embed/video/${id}" frameborder="0" scrolling="0" allowfullscreen></iframe>`
       ).join('\n\n');
       
-      document.getElementById('iframeOutput').innerHTML = 
-        `<strong>${ids.length} iframe${ids.length > 1 ? 's' : ''} generado${ids.length > 1 ? 's' : ''}:</strong><br><br>` + 
+      document.getElementById('iframeOutput').textContent = 
+        `${ids.length} iframe${ids.length > 1 ? 's' : ''} generado${ids.length > 1 ? 's' : ''}:\n\n` + 
         iframeHTML;
     }
 
