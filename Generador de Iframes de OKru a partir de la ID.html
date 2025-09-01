@@ -154,8 +154,8 @@
         resultado.push(`<iframe width="800" height="440" src="//ok.ru/videoembed/${id}?nochat=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>`);
       });
 
-      document.getElementById('output').innerHTML = resultado.length
-        ? `<strong>${resultado.length} iframe${resultado.length > 1 ? 's' : ''} generado${resultado.length > 1 ? 's' : ''}:</strong><br><br>` + resultado.join('<br><br>')
+      document.getElementById('output').textContent = resultado.length
+        ? `${resultado.length} iframe${resultado.length > 1 ? 's' : ''} generado${resultado.length > 1 ? 's' : ''}:\n\n` + resultado.join('\n\n')
         : "⚠️ No se generaron iframes. Asegúrate de ingresar las IDs correctamente.";
     }
 
