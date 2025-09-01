@@ -163,25 +163,26 @@
     });
 
     function generarIframes() {
-      const input = document.getElementById('inputText').value.trim();
-      const lineas = input.split(/\r?\n/);
-      const resultado = [];
+  const input = document.getElementById('inputText').value.trim();
+  const lineas = input.split(/\r?\n/);
+  const resultado = [];
 
-      lineas.forEach(id => {
-        id = id.trim();
-        if (!id) return;
+  lineas.forEach(id => {
+    id = id.trim();
+    if (!id) return;
 
-        if (modo === 'Drive') {
-          resultado.push(`<iframe src="https://drive.google.com/file/d/${id}/preview" width="800" height="440" allow="autoplay" allowfullscreen></iframe>`);
-        } else {
-          resultado.push(`<iframe width="800" height="440" frameborder="0" src="https://mega.nz/embed/${id}" allowfullscreen></iframe>`);
-        }
-      });
-
-      document.getElementById('output').innerHTML = resultado.length
-        ? `<strong>Iframes generados (${modo}):</strong><br><br>` + resultado.join('<br><br>')
-        : "No se generaron iframes. Asegúrate de ingresar los IDs correctamente.";
+    if (modo === 'Drive') {
+      resultado.push(`<iframe src="https://drive.google.com/file/d/${id}/preview" width="800" height="440" allow="autoplay" allowfullscreen></iframe>`);
+    } else {
+      resultado.push(`<iframe width="800" height="440" frameborder="0" src="https://mega.nz/embed/${id}" allowfullscreen></iframe>`);
     }
+  });
+
+  document.getElementById('output').textContent = resultado.length
+    ? `Iframes generados (${modo}):\n\n` + resultado.join("\n\n")
+    : "No se generaron iframes. Asegúrate de ingresar los IDs correctamente.";
+}
+
 
     function copiarResultado() {
       const resultado = document.getElementById('output').innerText;
