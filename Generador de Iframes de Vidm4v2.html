@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Iframes VID4ME</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f0f9f0 0%, #e0f2e0 100%);
+      padding: 20px;
+      color: #333;
+      margin: 0;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 128, 0, 0.1);
+      overflow: hidden;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .header {
+      background: linear-gradient(to right, #00a859, #00c853);
+      color: white;
+      padding: 25px 30px;
+      text-align: center;
+    }
+    
+    .header h2 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .header h2:before {
+      content: "🎥";
+      margin-right: 12px;
+      font-size: 24px;
+    }
+    
+    .header p {
+      margin: 10px 0 0;
+      opacity: 0.9;
+      font-size: 16px;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .input-group {
+      margin-bottom: 25px;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 15px;
+      font-weight: 600;
+      color: #00a859;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .input-group label:before {
+      content: "🔗";
+      margin-right: 10px;
+    }
+    
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      resize: vertical;
+      transition: border 0.3s, box-shadow 0.3s;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: #00c853;
+      box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.2);
+    }
+    
+    .file-upload {
+      background-color: #f0fff5;
+      border: 2px dashed #c0e0c0;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 25px;
+      transition: all 0.3s;
+    }
+    
+    .file-upload:hover {
+      background-color: #e8f7ed;
+      border-color: #00a859;
+    }
+    
+    .file-upload label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      color: #00a859;
+      font-weight: 600;
+    }
+    
+    .file-upload label:before {
+      content: "📁";
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+    
+    .file-upload input[type="file"] {
+      display: none;
+    }
+    
+    .file-upload span {
+      font-size: 14px;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    button:before {
+      font-size: 18px;
+    }
+    
+    #generarBtn {
+      background: linear-gradient(to right, #00a859, #00c853);
+      color: white;
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    #generarBtn:before {
+      content: "⚡";
+    }
+    
+    #generarBtn:hover {
+      background: linear-gradient(to right, #00914a, #00b347);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 168, 89, 0.3);
+    }
+    
+    #copiarBtn {
+      background: white;
+      color: #00a859;
+      border: 2px solid #00a859;
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    #copiarBtn:before {
+      content: "📄";
+    }
+    
+    #copiarBtn:hover {
+      background: #f0fff5;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 168, 89, 0.2);
+    }
+    
+    .size-info {
+      background-color: #f8fff8;
+      border-radius: 8px;
+      padding: 12px 20px;
+      margin: 15px 0;
+      text-align: center;
+      font-weight: 600;
+      color: #00a859;
+      border: 2px solid #d0f0d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .size-info:before {
+      content: "📐";
+      font-size: 20px;
+    }
+    
+    .result-title {
+      color: #00a859;
+      font-size: 20px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .result-title:before {
+      content: "✅";
+      margin-right: 10px;
+    }
+    
+    #outputIframes {
+      background-color: #f9f9f9;
+      border: 2px dashed #c0e0c0;
+      min-height: 200px;
+    }
+    
+    .copiado {
+      color: #00a859;
+      font-weight: 600;
+      margin-top: 15px;
+      padding: 12px 20px;
+      background-color: #f0fff5;
+      border-radius: 10px;
+      border-left: 5px solid #00a859;
+      display: none;
+      align-items: center;
+      animation: fadeIn 0.5s;
+    }
+    
+    .copiado:before {
+      content: "✓";
+      margin-right: 10px;
+      font-size: 20px;
+    }
+    
+    .info-box {
+      background-color: #f0fff5;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      border-left: 5px solid #00a859;
+    }
+    
+    .info-box h4 {
+      color: #00a859;
+      margin: 0 0 10px 0;
+      display: flex;
+      align-items: center;
+    }
+    
+    .info-box h4:before {
+      content: "💡";
+      margin-right: 8px;
+    }
+    
+    .info-box ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #555;
+    }
+    
+    .info-box li {
+      margin-bottom: 5px;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 14px;
+      border-top: 1px solid #eee;
+      background-color: #f9f9f9;
+    }
+    
+    .footer a {
+      color: #00a859;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @media (max-width: 768px) {
+      .content {
+        padding: 20px;
+      }
+      
+      .buttons {
+        flex-direction: column;
+      }
+      
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h2>Generador de Iframes VID4ME</h2>
+      <p>Convierte enlaces de VID4ME en código embebido</p>
+    </div>
+    
+    <div class="content">
+      <div class="input-group">
+        <label for="inputLinks">Pega tus enlaces de VID4ME (uno por línea):</label>
+        <textarea id="inputLinks" placeholder="https://www.vid4me.com/video/XXXXXXX
+https://www.vid4me.com/video/YYYYYYY
+https://www.vid4me.com/video/ZZZZZZZ"></textarea>
+      </div>
+      
+      <div class="file-upload">
+        <label for="fileInput">
+          <span>📁</span>
+          Importar desde archivo .txt
+          <input type="file" id="fileInput" accept=".txt">
+          <span>Haz clic aquí o arrastra un archivo .txt</span>
+        </label>
+      </div>
+      
+      <div class="size-info">
+        Tamaño del iframe: 800px × 440px
+      </div>
+      
+      <div class="buttons">
+        <button id="generarBtn" onclick="generarIframes()">Generar Iframes</button>
+        <button id="copiarBtn" onclick="copiarResultado()">Copiar Resultado</button>
+      </div>
+      
+      <div id="mensaje" class="copiado">✅ Iframes copiados al portapapeles</div>
+      
+      <h3 class="result-title">Resultado:</h3>
+      <textarea id="outputIframes" class="output" readonly></textarea>
+      
+      <div class="info-box">
+        <h4>Instrucciones:</h4>
+        <ul>
+          <li>Pega los enlaces de VID4ME directamente o importa un archivo .txt</li>
+          <li>Cada enlace debe estar en una línea separada</li>
+          <li>Formato aceptado: https://www.vid4me.com/video/XXXXXXX</li>
+          <li>Tamaño predeterminado: 800px × 440px (responsive)</li>
+          <li>Los iframes incluyen soporte para pantalla completa</li>
+        </ul>
+      </div>
+    </div>
+  
+  </div>
+
+  <script>
+    // Leer archivo TXT
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('inputLinks').value = e.target.result;
+        
+        // Mostrar notificación
+        const mensaje = document.getElementById('mensaje');
+        mensaje.textContent = `✅ Archivo "${file.name}" cargado correctamente`;
+        mensaje.style.display = 'flex';
+        
+        setTimeout(() => {
+          mensaje.style.display = 'none';
+        }, 3000);
+      };
+      reader.readAsText(file);
+    });
+
+    // Arrastrar y soltar archivos
+    const fileUpload = document.querySelector('.file-upload');
+    
+    fileUpload.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.style.backgroundColor = '#e8f7ed';
+      this.style.borderColor = '#00a859';
+    });
+    
+    fileUpload.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      this.style.backgroundColor = '#f0fff5';
+      this.style.borderColor = '#c0e0c0';
+    });
+    
+    fileUpload.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.style.backgroundColor = '#f0fff5';
+      this.style.borderColor = '#c0e0c0';
+      
+      const file = e.dataTransfer.files[0];
+      if (file && file.type === 'text/plain') {
+        document.getElementById('fileInput').files = e.dataTransfer.files;
+        
+        const event = new Event('change', { bubbles: true });
+        document.getElementById('fileInput').dispatchEvent(event);
+      } else {
+        const mensaje = document.getElementById('mensaje');
+        mensaje.textContent = '❌ Solo se aceptan archivos .txt';
+        mensaje.style.display = 'flex';
+        mensaje.style.color = '#e74c3c';
+        
+        setTimeout(() => {
+          mensaje.style.display = 'none';
+          mensaje.style.color = '#00a859';
+        }, 3000);
+      }
+    });
+
+    function generarIframes() {
+      const input = document.getElementById('inputLinks').value.trim();
+      const lineas = input.split(/\r?\n/);
+      let resultado = "";
+      let contador = 0;
+
+      lineas.forEach(link => {
+        link = link.trim();
+        if (!link) return;
+
+        // Validar enlace VID4ME
+        const match = link.match(/vid4me\.com\/video\/([a-zA-Z0-9]+)/);
+        if (match) {
+          resultado += `<iframe width="800" height="440" src="${link}" frameborder="0" allowfullscreen></iframe>\n\n`;
+          contador++;
+        }
+      });
+
+      document.getElementById('outputIframes').value = resultado;
+      
+      // Mostrar mensaje de éxito
+      if (contador > 0) {
+        const mensaje = document.getElementById('mensaje');
+        mensaje.textContent = `✅ ${contador} iframe(s) generado(s) correctamente`;
+        mensaje.style.display = 'flex';
+        
+        setTimeout(() => {
+          mensaje.style.display = 'none';
+        }, 3000);
+      } else if (input.length > 0) {
+        const mensaje = document.getElementById('mensaje');
+        mensaje.textContent = '❌ No se encontraron enlaces válidos de VID4ME';
+        mensaje.style.display = 'flex';
+        mensaje.style.color = '#e74c3c';
+        
+        setTimeout(() => {
+          mensaje.style.display = 'none';
+          mensaje.style.color = '#00a859';
+        }, 3000);
+      }
+    }
+
+    function copiarResultado() {
+      const output = document.getElementById('outputIframes');
+      if (!output.value.trim()) {
+        const mensaje = document.getElementById('mensaje');
+        mensaje.textContent = '❌ No hay contenido para copiar';
+        mensaje.style.display = 'flex';
+        mensaje.style.color = '#e74c3c';
+        
+        setTimeout(() => {
+          mensaje.style.display = 'none';
+          mensaje.style.color = '#00a859';
+        }, 3000);
+        return;
+      }
+      
+      output.select();
+      output.setSelectionRange(0, 99999);
+      
+      navigator.clipboard.writeText(output.value).then(() => {
+        const mensaje = document.getElementById('mensaje');
+        mensaje.textContent = '✅ Iframes copiados al portapapeles';
+        mensaje.style.display = 'flex';
+        mensaje.style.color = '#00a859';
+        
+        setTimeout(() => {
+          mensaje.style.display = 'none';
+        }, 2000);
+      });
+    }
+    
+    // Permitir ejecutar con Enter (Ctrl+Enter o Cmd+Enter)
+    document.getElementById("inputLinks").addEventListener("keydown", function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        generarIframes();
+      }
+    });
+  </script>
+
+</body>
+</html>
