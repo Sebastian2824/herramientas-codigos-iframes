@@ -151,7 +151,7 @@
       ids.forEach(id => {
         id = id.trim();
         if (!id) return;
-        resultado.push(`<iframe width="800" height="440" src="//ok.ru/videoembed/${id}?nochat=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>`);
+        resultado.push(`<iframe width="800" height="440" src="https://ok.ru/videoembed/${id}?nochat=1" frameborder="0" allow="autoplay" allowfullscreen></iframe>`);
       });
 
       document.getElementById('output').textContent = resultado.length

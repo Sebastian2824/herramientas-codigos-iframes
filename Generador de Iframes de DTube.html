@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Generador de iframes de Dailymotion</title>
+  <title>Generador de iframes para D.Tube</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -120,10 +120,10 @@
 </head>
 <body>
   <div class="container">
-    <h2>🎥 Generador de iframes de videos Dailymotion</h2>
+    <h2>🎥 Generador de iframes para D.Tube</h2>
 
-    <p>Pega aquí las IDs de los videos (una por línea o separadas por espacio):</p>
-    <textarea id="inputIDs" placeholder="Ejemplo: k7JrzqmhCkBv2SzZpUk"></textarea>
+    <p>Pega aquí los IDs de los videos (uno por línea o separados por espacio) o directamente un iframe existente:</p>
+    <textarea id="inputIDs" placeholder="Ejemplo: fa4ab3df-af9b-4928-8153-8bbbd2d15c53&#10;o bien: &#10;&lt;iframe src=&quot;https://play.d.tube/?v=fa4ab3df-af9b-4928-8153-8bbbd2d15c53&quot; width=&quot;640&quot; height=&quot;360&quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt;"></textarea>
 
     <div class="button-container">
       <label for="fileInput" class="file-input-label">📂 Cargar desde archivo</label>
@@ -138,20 +138,40 @@
   <script>
     function generateIframes() {
       const input = document.getElementById('inputIDs').value;
-      const ids = input.split(/\s+/).filter(id => id.trim() !== "");
+      const outputDiv = document.getElementById('iframeOutput');
       
-      if (ids.length === 0) {
-        document.getElementById('iframeOutput').textContent = "⚠️ No se ingresaron IDs válidas";
-        return;
+      // Detectar si hay etiquetas iframe en el texto
+      const iframeRegex = /<iframe[^>]*src=["']([^"']*)["'][^>]*>/gi;
+      let match;
+      const srcs = [];
+      while ((match = iframeRegex.exec(input)) !== null) {
+        srcs.push(match[1]);
       }
       
-      const iframeHTML = ids.map(id =>
-         `<iframe width="800" height="440" src="https://geo.dailymotion.com/player.html?video=${id}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; web-share" allowfullscreen></iframe>`
-  ).join('\n\n');
+      let iframeHTML = '';
+      let count = 0;
       
-      document.getElementById('iframeOutput').textContent = 
-        `${ids.length} iframe${ids.length > 1 ? 's' : ''} generado${ids.length > 1 ? 's' : ''}:\n\n` + 
-        iframeHTML;
+      if (srcs.length > 0) {
+        // Procesar cada src extraído
+        srcs.forEach(src => {
+          iframeHTML += `<iframe src="${src}" width="800" height="440" frameborder="0" allowfullscreen></iframe>\n\n`;
+          count++;
+        });
+      } else {
+        // No se encontraron iframes, tratar como lista de IDs
+        const ids = input.split(/\s+/).filter(id => id.trim() !== "");
+        if (ids.length === 0) {
+          outputDiv.textContent = "⚠️ No se ingresaron IDs válidas ni iframes.";
+          return;
+        }
+        ids.forEach(id => {
+          iframeHTML += `<iframe src="https://play.d.tube/?v=${id}" width="800" height="440" frameborder="0" allowfullscreen></iframe>\n\n`;
+          count++;
+        });
+      }
+      
+      // Mostrar resultado con contador
+      outputDiv.textContent = `${count} iframe${count > 1 ? 's' : ''} generado${count > 1 ? 's' : ''}:\n\n` + iframeHTML.trim();
     }
 
     function copyIframes() {
@@ -161,7 +181,9 @@
         return;
       }
       navigator.clipboard.writeText(output).then(() => {
-        alert("¡Código copiado al portapeles!");
+        alert("¡Código copiado al portapapeles!");
+      }).catch(() => {
+        alert("Error al copiar. Asegúrate de que el navegador lo permite.");
       });
     }
 
