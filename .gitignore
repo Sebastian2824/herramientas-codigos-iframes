@@ -1,0 +1,14 @@
+# API
+Frontend/.env
+
+Frontend/node_modules
+
+# Bancked
+Bancked/
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
