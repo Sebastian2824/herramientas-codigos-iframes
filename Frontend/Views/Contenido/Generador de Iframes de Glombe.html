@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Código Embed MP4</title>
+    <link rel="icon" type="image/png" href="../../Image/Logo.png">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 25px;
+            background-color: #f1f8e9;
+            color: #2e7d32;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            color: #1b5e20;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            border-bottom: 2px solid #4caf50;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-top: 10px;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 14px;
+            background-color: #e8f5e9;
+            color: #1b5e20;
+            resize: vertical;
+            box-sizing: border-box;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        pre {
+            background-color: #e8f5e9;
+            padding: 15px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            color: #1b5e20;
+            font-family: monospace;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .iframe-code {
+            margin-top: 25px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background-color: #4caf50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #388e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-input-label {
+            padding: 10px 20px;
+            border-radius: 25px;
+            background-color: #81c784;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .file-input-label:hover {
+            background-color: #66bb6a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        label {
+            color: #2e7d32;
+            font-weight: bold;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-message {
+            color: #2e7d32;
+            font-style: italic;
+            margin-top: 5px;
+        }
+
+        .error {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h2>✨ Generador Embed de Glombe</h2>
+
+        <label for="fileInput">
+            Importar archivo .txt con enlaces MP4:
+        </label>
+
+        <label for="fileInput" class="file-input-label">
+            📂 Seleccionar archivo
+        </label>
+
+        <input type="file" id="fileInput" accept=".txt">
+
+        <label for="manualInput">
+            O pegar enlaces manualmente (uno por línea):
+        </label>
+
+        <p class="info-message">
+            Ejemplo: https://media.glomble.com/uploads/video_files/EFRwERqNQc1S.mp4
+        </p>
+
+        <textarea id="manualInput" placeholder="Pega aquí tus enlaces MP4..."></textarea>
+
+        <button onclick="generarCodigo()">
+            ⚡ Generar Código
+        </button>
+
+        <div class="iframe-code" id="codigoContainer"></div>
+
+    </div>
+
+    <script>
+        function generarCodigo() {
+
+            const container = document.getElementById("codigoContainer");
+            container.innerHTML = "";
+
+            const inputText = document.getElementById("manualInput").value.trim();
+
+            const enlaces = inputText
+                .split(/\r?\n/)
+                .map(e => e.trim())
+                .filter(e => e !== "");
+
+            if (enlaces.length === 0) {
+                container.innerHTML =
+                    "<p class='error'>⚠️ No se encontraron enlaces.</p>";
+                return;
+            }
+
+            const enlacesValidos = [];
+            const enlacesInvalidos = [];
+
+            enlaces.forEach(url => {
+                try {
+                    const parsed = new URL(url);
+
+                    if (
+                        (parsed.protocol === "https:" || parsed.protocol === "http:") &&
+                        parsed.pathname.toLowerCase().endsWith(".mp4")
+                    ) {
+                        enlacesValidos.push(parsed.href);
+                    } else {
+                        enlacesInvalidos.push(url);
+                    }
+
+                } catch {
+                    enlacesInvalidos.push(url);
+                }
+            });
+
+            if (enlacesValidos.length === 0) {
+                container.innerHTML =
+                    "<p class='error'>⚠️ No se encontraron enlaces MP4 válidos.</p>";
+                return;
+            }
+
+            let codigoHTML =
+                `<!-- ${enlacesValidos.length} video${enlacesValidos.length > 1 ? 's' : ''} generado${enlacesValidos.length > 1 ? 's' : ''} -->\n\n`;
+
+            enlacesValidos.forEach(url => {
+
+                const urlSegura = url
+                    .replace(/&/g, "&amp;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;");
+
+                codigoHTML +=
+                    `<iframe width="800" height="440" src="${urlSegura}" frameborder="0" scrolling="0" allowfullscreen></iframe>`;
+
+            });
+
+            const pre = document.createElement("pre");
+            pre.textContent = codigoHTML;
+
+            const copyBtn = document.createElement("button");
+            copyBtn.innerHTML = "📋 Copiar Código";
+
+            copyBtn.onclick = function () {
+                navigator.clipboard.writeText(codigoHTML)
+                    .then(() => {
+                        alert("¡Código copiado al portapapeles!");
+                    })
+                    .catch(() => {
+                        const temp = document.createElement("textarea");
+                        temp.value = codigoHTML;
+                        document.body.appendChild(temp);
+                        temp.select();
+                        document.execCommand("copy");
+                        temp.remove();
+                        alert("¡Código copiado!");
+                    });
+            };
+
+            container.appendChild(pre);
+            container.appendChild(copyBtn);
+
+            if (enlacesInvalidos.length > 0) {
+                const aviso = document.createElement("p");
+                aviso.className = "error";
+                aviso.textContent =
+                    `⚠️ Se omitieron ${enlacesInvalidos.length} enlace(s) no válidos.`;
+                container.appendChild(aviso);
+            }
+        }
+
+        // Leer archivo .txt
+        document.getElementById("fileInput")
+            .addEventListener("change", function () {
+
+                const file = this.files[0];
+
+                if (!file) return;
+
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    document.getElementById("manualInput").value = e.target.result;
+                };
+
+                reader.readAsText(file);
+            });
+
+    </script>
+</body>
+
+</html>
