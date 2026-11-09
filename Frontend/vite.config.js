@@ -46,6 +46,7 @@ export default defineConfig({
         generadorIframeDailymotion: resolve(__dirname, 'Views/Contenido/Generador de iframes de Dailymotion a partir de la ID.html'),
         generadorIframeDriveMega: resolve(__dirname, 'Views/Contenido/Generador de Iframes de Drive y Mega a Partir de la ID.html'),
         generadorIframeDTube: resolve(__dirname, 'Views/Contenido/Generador de Iframes de DTube.html'),
+        generadorIframeGlombe: resolve(__dirname, 'Views/Contenido/Generador de Iframes de Glombe.html'),
         generadorIframeJumpshare: resolve(__dirname, 'Views/Contenido/Generador de Iframes de Jumpshare.html'),
         generadorIframeJumpshareV2: resolve(__dirname, 'Views/Contenido/Generador de Iframes de Jumpsharev2.html'),
         generadorIframeOkru: resolve(__dirname, 'Views/Contenido/Generador de Iframes de OKru a partir de la ID.html'),
